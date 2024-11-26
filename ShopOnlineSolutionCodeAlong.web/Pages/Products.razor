@@ -1,0 +1,53 @@
+﻿@* This page directive specifies the path at which this razor component is invokes, in this case its the website root path '/' *@
+@page "/"
+
+@* This using direcctive can be referenced here or globally for views in the _Imports.razor file*@
+@using ShopOnlineCodeAlong.Modells.Dtos
+
+@inherits ProductBase
+
+@code {
+    //We could call our service here but in the interest of keeping the code clean the code has been abstracted into a base class, ProductBase.cs
+    //This razor component will then inherit from that base class
+}
+
+@if(Products == null)
+{
+    <h3>Loading Prodcuts</h3>
+}
+else
+{
+    <h3 class="mb-5">Products</h3>
+
+    var productsCount = Products.Count();
+    var products = new List<ProductDto>();
+
+    const int itemsPerRow = 4;
+    var productRowList = new List<ProductDto>();
+
+    for(int i = 0; i < productsCount; i++)
+    {
+        productRowList = Products.Skip(i * itemsPerRow).Take(itemsPerRow).ToList();
+        <div class="row mt-3">
+            @foreach(var item in productRowList)
+            {
+                <div class="col-md-3 mb-2">
+                    <a href="#">
+                        <div class="card">
+                            <img ckass="img-thumbnail" src="@item.ImageURL" />
+                            <div class="card-body mb-3">
+                                <h5 class="card-title mb-3">
+                                    @item.Name
+                                </h5>
+                                <p class="card-text">
+                                    <b>@item.Price.ToString()</b>
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+
+}
