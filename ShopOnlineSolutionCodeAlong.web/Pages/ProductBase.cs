@@ -9,7 +9,7 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
         [Inject]
         public IProductService ProductService {get;set;}
         public IEnumerable<ProductDto> Products { get; set; }
-        protected override Task OnInitializedAsync()
+        protected async override Task OnInitializedAsync()
         {
             //Razor component lifecycle event read more here
             //return base.OnInitializedAsync();
