@@ -20,34 +20,19 @@ else
     <h3 class="mb-5">Products</h3>
 
     var productsCount = Products.Count();
-    var products = new List<ProductDto>();
 
-    const int itemsPerRow = 4;
-    var productRowList = new List<ProductDto>();
-
-    for(int i = 0; i < productsCount; i++)
+    if(productsCount > 0)
     {
-        productRowList = Products.Skip(i * itemsPerRow).Take(itemsPerRow).ToList();
-        <div class="row mt-3">
-            @foreach(var item in productRowList)
-            {
-                <div class="col-md-3 mb-2">
-                    <a href="#">
-                        <div class="card">
-                            <img ckass="img-thumbnail" src="@item.ImageURL" />
-                            <div class="card-body mb-3">
-                                <h5 class="card-title mb-3">
-                                    @item.Name
-                                </h5>
-                                <p class="card-text">
-                                    <b>@item.Price.ToString()</b>
-                                </p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            }
-        </div>
+        foreach(var group in GetGroupedProductsByCategory())
+        {
+            <h3>@GetCategoryName(group)</h3>
+            <div class="row mt-3">
+                <DisplayProducts Products="@group"></DisplayProducts>
+            </div>
+            <hr/> 
+        }
     }
+    
+
 
 }

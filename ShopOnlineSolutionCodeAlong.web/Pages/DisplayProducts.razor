@@ -1,0 +1,22 @@
+﻿@inherits DisplayProductsBase
+@* note there is no route defined at the top of this file so this means 
+it must be accessed as a nested child component via a parent component *@
+
+@foreach (var item in Products)
+{
+    <div class="col-md-3 mb-2">
+        <a href="#">
+            <div class="card">
+                <img ckass="img-thumbnail" src="@item.ImageURL" />
+                <div class="card-body mb-3">
+                    <h5 class="card-title mb-3">
+                        @item.Name
+                    </h5>
+                    <p class="card-text">
+                        <b>@item.Price.ToString("C")</b>
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+}
