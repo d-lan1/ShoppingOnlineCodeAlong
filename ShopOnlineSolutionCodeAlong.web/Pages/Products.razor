@@ -13,12 +13,11 @@
 
 @if(Products == null)
 {
-    <h3>Loading Prodcuts</h3>
+    <DisplaySpinner/>
 }
 else
 {
     <h3 class="mb-5">Products</h3>
-
     var productsCount = Products.Count();
 
     if(productsCount > 0)
