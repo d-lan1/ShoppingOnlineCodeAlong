@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Components;
 using ShopOnlineCodeAlong.Modells.Dtos;
 using ShopOnlineSolutionCodeAlong.web.Services.Contracts;
@@ -11,6 +12,10 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
         public int Id { get; set; }
         [Inject]
         public IProductService ProductService { get; set; }
+        [Inject]
+        public IShoppingCartService ShoppingCartService { get; set; }
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
         public ProductDto Product { get; set; }
         public string ErrorMessage { get; set; }
         protected override async Task OnInitializedAsync()
@@ -23,6 +28,19 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
             catch (Exception ex) 
             {
                 ErrorMessage = ex.Message;
+            }
+        }
+
+        protected async Task AddToCart_Click(CartItemToAddDto itemToAddDto)
+        {
+            try
+            {
+                var carItemDto = await ShoppingCartService.AddItem(itemToAddDto);
+                NavigationManager.NavigateTo("/ShoppingCart");
+            }
+            catch (Exception)
+            {
+                //Log Exception
             }
         }
     }
