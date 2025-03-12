@@ -4,7 +4,8 @@ namespace ShopOnlineSolutionCodeAlong.web.Services.Contracts
 {
     public interface IShoppingCartService
     {
-        Task<IEnumerable<CartItemDto>> GetItems(int userId);
+        Task<List<CartItemDto>> GetItems(int userId);
         Task<CartItemDto> AddItem(CartItemToAddDto itemToAddDto);
+        Task<CartItemDto> DeleteItem(int id);
     }
 }

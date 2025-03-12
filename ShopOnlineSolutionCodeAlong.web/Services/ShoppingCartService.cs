@@ -1,7 +1,8 @@
 ﻿using System.Net.Http.Json;
 using ShopOnlineCodeAlong.Modells.Dtos;
+using ShopOnlineSolutionCodeAlong.web.Services.Contracts;
 
-namespace ShopOnlineSolutionCodeAlong.web.Services.Contracts
+namespace ShopOnlineSolutionCodeAlong.web.Services
 {
     public class ShoppingCartService : IShoppingCartService
     {
@@ -15,13 +16,13 @@ namespace ShopOnlineSolutionCodeAlong.web.Services.Contracts
         {
             try
             {
-                var response = await httpClient.PostAsJsonAsync<CartItemToAddDto>("api/ShoppingCart", itemToAddDto);
+                var response = await httpClient.PostAsJsonAsync("api/ShoppingCart", itemToAddDto);
 
                 if (response.IsSuccessStatusCode) 
                 {
                     if(response.StatusCode == System.Net.HttpStatusCode.NoContent)
                     {
-                        return default(CartItemDto);
+                        return default;
                     }
 
                     return await response.Content.ReadFromJsonAsync<CartItemDto>();
@@ -38,7 +39,27 @@ namespace ShopOnlineSolutionCodeAlong.web.Services.Contracts
             }
         }
 
-        public async Task<IEnumerable<CartItemDto>> GetItems(int userId)
+        public async Task<CartItemDto> DeleteItem(int id)
+        {
+            try
+            {
+                var response = await httpClient.DeleteAsync($"api/ShoppingCart/{id}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<CartItemDto>();
+                }
+
+                return default(CartItemDto);
+            }
+            catch (Exception)
+            {
+                //Log exception
+                throw;
+            }
+        }
+
+        public async Task<List<CartItemDto>> GetItems(int userId)
         {
             try
             {
@@ -46,9 +67,9 @@ namespace ShopOnlineSolutionCodeAlong.web.Services.Contracts
                 if(response.IsSuccessStatusCode)
                 {
                     if(response.StatusCode == System.Net.HttpStatusCode.NoContent)
-                        return Enumerable.Empty<CartItemDto>();
+                        return Enumerable.Empty<CartItemDto>().ToList();
 
-                    return await response.Content.ReadFromJsonAsync<IEnumerable<CartItemDto>>();
+                    return await response.Content.ReadFromJsonAsync<List<CartItemDto>>();
                 }
                 else
                 {

@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShopOnlineCodeAlong.Api.Data;
 using ShopOnlineCodeAlong.Api.Entities;
+using ShopOnlineCodeAlong.Api.Repositories.Contracts;
 using ShopOnlineCodeAlong.Modells.Dtos;
 
-namespace ShopOnlineCodeAlong.Api.Repositories.Contracts
+namespace ShopOnlineCodeAlong.Api.Repositories
 {
     public class ShoppingCartRepository : IShoppingCartRepository
     {
@@ -15,7 +16,7 @@ namespace ShopOnlineCodeAlong.Api.Repositories.Contracts
         }
         private async Task<bool> CartItemExists(int cartId, int productId)
         {
-            return await this.shopOnlineDbContext.CartItems.AnyAsync(c => c.CartId == cartId && c.ProductId == productId);
+            return await shopOnlineDbContext.CartItems.AnyAsync(c => c.CartId == cartId && c.ProductId == productId);
         }
         public async Task<CartItem> AddTiem(CartItemToAddDto cartItemToAdd)
         {
@@ -23,7 +24,7 @@ namespace ShopOnlineCodeAlong.Api.Repositories.Contracts
             {
 
                 //linq query syntax - this is syntactic sugar on the linq method syntax below. Both compile to the same thing in asp.net
-                var item = await (from product in this.shopOnlineDbContext.Products
+                var item = await (from product in shopOnlineDbContext.Products
                                   where product.Id == cartItemToAdd.ProductId
                                   select new CartItem
                                   {
@@ -45,8 +46,8 @@ namespace ShopOnlineCodeAlong.Api.Repositories.Contracts
 
                 if (item != null)
                 {
-                    var result = await this.shopOnlineDbContext.CartItems.AddAsync(item);
-                    await this.shopOnlineDbContext.SaveChangesAsync();
+                    var result = await shopOnlineDbContext.CartItems.AddAsync(item);
+                    await shopOnlineDbContext.SaveChangesAsync();
                     return result.Entity;
                 }
             }
@@ -54,15 +55,23 @@ namespace ShopOnlineCodeAlong.Api.Repositories.Contracts
             return null;
         }
 
-        public Task<CartItem> DeleteItem(int id)
+        public async Task<CartItem> DeleteItem(int id)
         {
-            throw new NotImplementedException();
+            var item = await this.shopOnlineDbContext.CartItems.FindAsync(id);
+
+            if (item != null)
+            {
+                this.shopOnlineDbContext.CartItems.Remove(item);
+                await this.shopOnlineDbContext.SaveChangesAsync();
+            }
+
+            return item;
         }
 
         public async Task<CartItem> GetItem(int cartId)
         {
             //Very similar code to GetItems, i smell duplication
-            return await this.shopOnlineDbContext.CartItems.Where(i => i.CartId == cartId).SingleOrDefaultAsync();
+            return await shopOnlineDbContext.CartItems.Where(i => i.CartId == cartId).SingleOrDefaultAsync();
         }
 
         public async Task<IEnumerable<CartItem>> GetItems(int userId)
