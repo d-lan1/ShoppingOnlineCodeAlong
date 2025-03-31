@@ -45,7 +45,7 @@ namespace ShopOnlineCodeAlong.Api.Extensions
         {
             return (from cartItem in cartItems
                     join product in products
-                    on cartItem.Id equals product.Id
+                    on cartItem.ProductId equals product.Id
                     select new CartItemDto
                     {
                         Id = cartItem.Id,
