@@ -1,6 +1,17 @@
 ﻿﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">ShopOnline.Web</a>
+@*      Ive deviated from the tutoiral for CartMenu display in am attempt to have a better looking UI 
+        and less code duplication. The below div only shows on mobile (at the sm bootrap breakpoint). 
+        I always have two cartmenus (one here and one in mainlayout.razor), 
+        when one is hidden the other is showing and vice versa. 
+        I think this is inefficient and could do with some nice css to remove duplicate objects 
+        (which unnecesarily consume resources) but thats outside the scope of this project. 
+        Annoyingly, i think its just as inefficient as the original authors only with less code duplication
+        across components and classes, which is a win imo. *@
+        <div class="ms-auto d-block d-sm-none">
+            <CartMenu />
+        </div>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>

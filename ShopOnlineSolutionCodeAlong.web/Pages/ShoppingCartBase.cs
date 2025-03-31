@@ -25,13 +25,13 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
             try
             {
                 ShoppingCartItems = await ShoppingCartService.GetItems(HardCoded.UserId);
+                CartChanged();
+                
             }
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
             }
-
-            CalculateCartSummaryTotals();
 
         }
 
@@ -59,7 +59,7 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
             //Than a traditional GET request to fetch and re-render all items in the cart
 
             RemoveCartItem(id);
-            CalculateCartSummaryTotals();
+            CartChanged();
             await MakeUpdateQtyButtonVisible(id, false);
 
         }
@@ -111,7 +111,7 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
 
                     var returnedUpdateItemDto = await this.ShoppingCartService.UpdateQty(updateItemDto);
                     UpdateItemTotalPrice(returnedUpdateItemDto);
-                    CalculateCartSummaryTotals();
+                    CartChanged();
                     await MakeUpdateQtyButtonVisible(id, true);
 
                 }
@@ -130,6 +130,12 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
                 ErrorMessage = ex.Message;
             }
 
+        }
+
+        private void CartChanged()
+        {
+            CalculateCartSummaryTotals();
+            ShoppingCartService.RaiseEventOnShoppingCartChanged(TotalQuantity);
         }
     }
 }

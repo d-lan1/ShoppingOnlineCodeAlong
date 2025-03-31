@@ -1,0 +1,53 @@
+﻿@* To prevent memory leaks, IDisposable is implimented, see implimented method for explination *@
+@implements IDisposable
+@inject IShoppingCartService shoppingCartService
+
+<a href="ShoppingCart" class="btn btn-info">
+    <i class="oi oi-cart"></i>
+    <span class="badge bg-dark">@shoppingCartItemsCount</span>
+</a>
+
+@code{
+    //This class isnt likely to contain a lot of code logic, therefore we dont need
+    //to abstract the code into a base class
+
+    private int shoppingCartItemsCount = 0;
+
+    protected override void OnInitialized()
+    {
+        shoppingCartService.OnShoppingCartChanged += ShoppingCartChanged;
+
+    }
+
+    protected void ShoppingCartChanged(int totalQty)
+    {
+        shoppingCartItemsCount = totalQty;
+
+        //This is a built in method that will re-render the component
+        StateHasChanged();
+    }
+
+     /*
+     * Not every Blazor component needs to implement IDisposable.
+     * Only implement IDisposable when your component acquires resources that require explicit cleanup.
+     *
+     * Examples:
+     *   - Event Subscriptions:
+     *       If your component subscribes to events (from a service or another component),
+     *       failing to unsubscribe can prevent garbage collection and lead to memory leaks.
+     *
+     *   - External Resources:
+     *       Components handling unmanaged resources (e.g., file handles, timers, or network connections)
+     *       should implement IDisposable to ensure these resources are properly released.
+     *
+     * In a Blazor single-page application, "pages" are views defined by components using the `@page` directive.
+     * Even though the app loads as a single HTML page, navigating between these routes causes components to be
+     * added to or removed from the render tree. Components are disposed when they are removed (e.g., when the user
+     * navigates to a different route or performs a full page reload).
+     */
+
+    void IDisposable.Dispose()
+    {
+        shoppingCartService.OnShoppingCartChanged -= ShoppingCartChanged;
+    }
+}

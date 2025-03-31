@@ -9,10 +9,16 @@ namespace ShopOnlineSolutionCodeAlong.web.Services
     {
         private readonly HttpClient httpClient;
 
+        // The event modifier defines a special type of delegate that can only be invoked
+        // by the defining class or subscribed to be external classes, 
+        // enabling publisher-subscriber communication pattern
+        public event Action<int> OnShoppingCartChanged;
+
         public ShoppingCartService(HttpClient httpClient)
         {
             this.httpClient = httpClient;
         }
+
         public async Task<CartItemDto> AddItem(CartItemToAddDto itemToAddDto)
         {
             try
@@ -84,7 +90,15 @@ namespace ShopOnlineSolutionCodeAlong.web.Services
             }
         }
 
-        
+        public void RaiseEventOnShoppingCartChanged(int totalQty)
+        {
+            //If OnShoppingCartChanged is not null, it means the event has subscribers
+            if (OnShoppingCartChanged != null)
+            {
+                OnShoppingCartChanged.Invoke(totalQty);
+            }
+        }
+
         public async Task<CartItemDto> UpdateQty(CartItemQtyUpdateDto cartItemQtyUpdateDto)
         {
             try
