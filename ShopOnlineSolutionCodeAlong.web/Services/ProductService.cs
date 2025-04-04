@@ -1,4 +1,5 @@
 ﻿using ShopOnlineCodeAlong.Modells.Dtos;
+using ShopOnlineCodeAlong.Models.Dtos;
 using ShopOnlineSolutionCodeAlong.web.Services.Contracts;
 using System.Net.Http.Json;
 
@@ -61,6 +62,61 @@ namespace ShopOnlineSolutionCodeAlong.web.Services
                 }
             }
 
+            catch (Exception)
+            {
+                //TODO log Exception
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<ProductCategoryDto>> GetProductCategories()
+        {
+            try
+            {
+                var response = await httpClient.GetAsync("api/Product/GetProductCategories");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    {
+                        return Enumerable.Empty<ProductCategoryDto>();
+                    }
+                    return await response.Content.ReadFromJsonAsync<IEnumerable<ProductCategoryDto>>();
+                }
+                else
+                {
+                    var message = await response.Content.ReadAsStringAsync();
+                    throw new Exception(message);
+                }
+            }
+
+            catch (Exception)
+            {
+                //TODO log Exception
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<ProductDto>> GetItemsByCategory(int categoryId)
+        {
+            try
+            {
+                var response = await httpClient.GetAsync($"api/Product/{categoryId}/GetItemsByCategory");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    {
+                        return Enumerable.Empty<ProductDto>();
+                    }
+                    return await response.Content.ReadFromJsonAsync<IEnumerable<ProductDto>>();
+                }
+                else
+                {
+                    var message = response.Content.ReadAsStringAsync();
+                    throw new Exception(message.Result);
+                }
+            }
             catch (Exception)
             {
                 //TODO log Exception

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShopOnlineCodeAlong.Api.Extensions;
 using ShopOnlineCodeAlong.Api.Repositories.Contracts;
 using ShopOnlineCodeAlong.Modells.Dtos;
+using ShopOnlineCodeAlong.Models.Dtos;
 
 namespace ShopOnlineCodeAlong.Api.Controllers
 {
@@ -27,7 +28,7 @@ namespace ShopOnlineCodeAlong.Api.Controllers
                 var products = await this.productRepository.GetItems();
                 var productCategories = await this.productRepository.GetCategories();
 
-                if(products == null || productCategories == null)
+                if (products == null || productCategories == null)
                 {
                     return NotFound();
                 }
@@ -67,6 +68,48 @@ namespace ShopOnlineCodeAlong.Api.Controllers
             catch (Exception)
             {
 
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+        }
+
+        [HttpGet]
+        [Route(nameof(GetProductCategories))]
+        public async Task<ActionResult<IEnumerable<ProductCategoryDto>>> GetProductCategories()
+        {
+            try
+            {
+                var productCategories = await this.productRepository.GetCategories();
+                var productCategoriesDto = productCategories.ConvertToDto();
+                return Ok(productCategoriesDto);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    "Error retrieving data from the database");
+            }
+        }
+
+        [HttpGet]
+        [Route("{categoryId}/GetItemsByCategory")]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetItemsByCategory(int categoryId)
+        {
+            try
+            {
+                var products = await this.productRepository.GetItemsByCategory(categoryId);
+                var productCategories = await this.productRepository.GetCategories();
+                if (products == null || productCategories == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var productDto = products.ConvertToDto(productCategories);
+                    return Ok(productDto);
+                }
+            }
+            catch (Exception)
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     "Error retrieving data from the database");
             }
