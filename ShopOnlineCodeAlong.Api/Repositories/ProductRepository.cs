@@ -49,7 +49,7 @@ namespace ShopOnlineCodeAlong.Api.Repositories
                 .Where(p => p.CategoryId == id)
                 .ToListAsync();
 
-            return produts;
+            return products;
         }
     }
 }
