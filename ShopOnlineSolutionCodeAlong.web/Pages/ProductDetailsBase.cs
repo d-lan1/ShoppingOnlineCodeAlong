@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Components;
 using ShopOnlineCodeAlong.Modells.Dtos;
+using ShopOnlineSolutionCodeAlong.web.Services;
 using ShopOnlineSolutionCodeAlong.web.Services.Contracts;
 
 namespace ShopOnlineSolutionCodeAlong.web.Pages
@@ -16,14 +17,20 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
         public IShoppingCartService ShoppingCartService { get; set; }
         [Inject]
         public NavigationManager NavigationManager { get; set; }
+        [Inject]
+        public IManageProductsLocalStorageService ManageProductsLocalStorageService { get; set; }
+        [Inject]
+        public IManageCartItemsLocalStorageService ManageCartItemsLocalStorageService { get; set; }
         public ProductDto Product { get; set; }
         public string ErrorMessage { get; set; }
+        private List<CartItemDto> ShoppingCartItems { get; set; }
         protected override async Task OnInitializedAsync()
         {
             //This will execute as soon as our component is invoked (im assuming this means when its rendered/initialised on the front end)
             try
             {
-                Product = await ProductService.GetItem(Id);
+                ShoppingCartItems = await ManageCartItemsLocalStorageService.GetCollection();
+                Product = await GetProductById(Id);
             }
             catch (Exception ex) 
             {
@@ -35,7 +42,14 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
         {
             try
             {
-                var carItemDto = await ShoppingCartService.AddItem(itemToAddDto);
+                var cartItemDto = await ShoppingCartService.AddItem(itemToAddDto);
+
+                if(cartItemDto != null)
+                {
+                    ShoppingCartItems.Add(cartItemDto);
+                    await ManageCartItemsLocalStorageService.SaveCollection(ShoppingCartItems);
+                }
+
                 NavigationManager.NavigateTo("/ShoppingCart");
             }
             catch (Exception)
@@ -43,5 +57,18 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
                 //Log Exception
             }
         }
+
+        private async Task<ProductDto> GetProductById(int id)
+        {
+            var productDtos = await ManageProductsLocalStorageService.GetCollection();
+
+            if(productDtos != null)
+            {
+                return productDtos.SingleOrDefault(p => p.Id == id);
+            }
+
+            return null;
+        }
+
     }
 }

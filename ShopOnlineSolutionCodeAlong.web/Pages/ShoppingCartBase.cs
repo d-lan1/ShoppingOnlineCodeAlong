@@ -15,6 +15,10 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
         public IProductService ProductService { get; set; }
         [Inject]
         public IShoppingCartService ShoppingCartService { get; set; }
+        [Inject]
+        public IManageProductsLocalStorageService ManageProductsLocalStorageService { get; set; }
+        [Inject]
+        public IManageCartItemsLocalStorageService ManageCartItemsLocalStorageService { get; set; }
         public List<CartItemDto> ShoppingCartItems { get; set; }
         protected string TotalPrice { get; set; }
         protected int TotalQuantity { get; set; }
@@ -24,7 +28,7 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
         {
             try
             {
-                ShoppingCartItems = await ShoppingCartService.GetItems(HardCoded.UserId);
+                ShoppingCartItems = await ManageCartItemsLocalStorageService.GetCollection();
                 CartChanged();
                 
             }
@@ -78,7 +82,7 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
             await Js.InvokeVoidAsync("MakeUpdateQtyButtonVisible", id, visible);
         }
 
-        public void UpdateItemTotalPrice(CartItemDto cartItemDto)
+        public async Task UpdateItemTotalPrice(CartItemDto cartItemDto)
         {
             var item = GetCartItem(cartItemDto.Id);
 
@@ -87,14 +91,17 @@ namespace ShopOnlineSolutionCodeAlong.web.Pages
                 item.TotalPrice = cartItemDto.Price * cartItemDto.Qty;
             }
 
+            await ManageCartItemsLocalStorageService.SaveCollection(ShoppingCartItems);
         }
 
-        private void RemoveCartItem(int id)
+        private async Task RemoveCartItem(int id)
         {
             var cartItemDto = GetCartItem(id);
 
             //This removes the item from the clientside list
             ShoppingCartItems.Remove(cartItemDto);
+
+            await ManageCartItemsLocalStorageService.SaveCollection(ShoppingCartItems);
         }
 
         protected async Task UpdateQtyCartITem_Click(int id, int qty)
